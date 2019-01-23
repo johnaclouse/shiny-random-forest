@@ -76,7 +76,10 @@ shinyUI(fluidPage(
     hr(),
     
     p(style= 'padding-bottom: 20px'),
-    plotOutput("roc_plot"))
+    plotOutput("roc_plot"),
+    plotOutput('explainer')
+    
+    )
     
   )
   

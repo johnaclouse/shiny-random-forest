@@ -2,6 +2,8 @@ library(tidyverse)
 library(caret)
 library(randomForest)
 library(plotROC)
+library(lime)
+
 
 # Load the data and remove NAs
 data("PimaIndiansDiabetes2", package = "mlbench")
@@ -38,10 +40,20 @@ model$finalModel
 
 model
 
+
+
+
 # Select a parameter setting
 selectedIndices <- model$pred$mtry == 2
 
 model_data <- model$pred[selectedIndices,]
+
+
+
+
+
+
+
 
 roc_plot <-
   ggplot(model_data, aes(m = pos, d = factor(obs, levels = c("neg", "pos")))) +
@@ -63,6 +75,10 @@ roc_plot <-
 # Make predictions on the test data
 predicted.classes <- model %>% predict(test.data)
 head(predicted.classes)
+
+
+
+
 
 # Compute model accuracy rate
 mean(predicted.classes == test.data$diabetes)

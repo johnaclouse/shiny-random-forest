@@ -27,3 +27,5 @@ rsconnect/
 .Rproj.user
 model.rda
 *.Rproj
+*.pdf
+*.html
