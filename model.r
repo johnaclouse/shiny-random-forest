@@ -10,17 +10,23 @@ PimaIndiansDiabetes2 <- na.omit(PimaIndiansDiabetes2)
 sample_n(PimaIndiansDiabetes2, 3)
 # Split the data into training and test set
 set.seed(123)
-training.samples <- PimaIndiansDiabetes2$diabetes %>% 
+training.samples <- PimaIndiansDiabetes2$diabetes %>%
   createDataPartition(p = 0.8, list = FALSE)
-train.data  <- PimaIndiansDiabetes2[training.samples, ]
-test.data <- PimaIndiansDiabetes2[-training.samples, ]
+train.data  <- PimaIndiansDiabetes2[training.samples,]
+test.data <- PimaIndiansDiabetes2[-training.samples,]
 
 # Fit the model on the training set
 set.seed(123)
 model <- train(
-  diabetes ~., data = train.data, method = "rf",
-  trControl = trainControl(method="cv", summaryFunction=twoClassSummary, classProbs=T,
-                           savePredictions = T),
+  diabetes ~ .,
+  data = train.data,
+  method = "rf",
+  trControl = trainControl(
+    method = "cv",
+    summaryFunction = twoClassSummary,
+    classProbs = T,
+    savePredictions = T
+  ),
   importance = TRUE
 )
 # Best tuning parameter
@@ -35,15 +41,22 @@ model
 # Select a parameter setting
 selectedIndices <- model$pred$mtry == 2
 
-model_data <- model$pred[selectedIndices, ] 
+model_data <- model$pred[selectedIndices,]
 
-roc_plot <- ggplot(model_data, aes(m=pos, d=factor(obs, levels = c("neg", "pos")))) +
+roc_plot <-
+  ggplot(model_data, aes(m = pos, d = factor(obs, levels = c("neg", "pos")))) +
   geom_roc(n.cuts = 10) +
   geom_rocci(ci.at = quantile(model_data$pos, c(0.2, 0.5, 0.8)), linetype = 1) +
   coord_equal() +
   style_roc(theme = theme_grey)
 
-roc_plot <- roc_plot + annotate("text", x=0.75, y=0.25, label=paste("AUC =", round((calc_auc(g))$AUC, 4)))
+roc_plot <-
+  roc_plot + annotate("text",
+                      x = 0.75,
+                      y = 0.25,
+                      label = paste("AUC =", round((calc_auc(
+                        roc_plot
+                      ))$AUC, 4)))
 
 
 
@@ -85,23 +98,21 @@ pregnant <- 1
 glucose <- 130.1
 pressure <- 70.1
 triceps <- 30
-insulin <-335
+insulin <- 335
 mass <- 30
 pedigree <- 0.5
 age <- 30.1
 
-example.data <- 
-  data.frame(
-    pregnant,
-    glucose,
-    pressure,
-    triceps,
-    insulin,
-    mass,
-    pedigree,
-    age
-  )
+example.data <-
+  data.frame(pregnant,
+             glucose,
+             pressure,
+             triceps,
+             insulin,
+             mass,
+             pedigree,
+             age)
 
- save(model, file = "model.rda")
+save(model, file = "model.rda")
 
 # cat(predict(model, example.data, type = "prob")[[2]])
